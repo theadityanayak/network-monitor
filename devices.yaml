@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────
+#  devices.yaml — Network Monitor Device Configuration
+#
+#  Add or remove entries to control which hosts are monitored.
+#  SNMP v2c is used for all devices.
+#  Set snmp_enabled: false to perform ICMP-only monitoring.
+# ─────────────────────────────────────────────────────────────
+
+devices:
+
+  # ── Local / Docker network ─────────────────────────────────
+  - name: "localhost"
+    ip: "127.0.0.1"
+    location: "local"
+    snmp_enabled: false           # no SNMP agent on loopback
+
+  - name: "docker-gateway"
+    ip: "172.17.0.1"             # default Docker bridge gateway
+    location: "docker"
+    snmp_enabled: false
+  - name: "my-macbook"
+    ip: "10.67.210.44"
+    location: "home"
+    snmp_enabled: false    # Macs don't run SNMP by default
+    
+# ── SNMP-enabled lab device (replace with your router/switch IP) ──
+# - name: "lab-router"
+#   ip: "192.168.1.1"
+#   location: "lab-rack-A"
+#   snmp_community: "public"
+#   snmp_port: 161
+#   snmp_enabled: true
+
+# ── Example: Cisco IOS device ─────────────────────────────
+# - name: "core-switch"
+#   ip: "10.0.0.2"
+#   location: "datacenter"
+#   snmp_community: "monitoring"
+#   snmp_port: 161
+#   snmp_enabled: true
+
+# ── Example: ICMP-only (firewall, DMZ host, etc.) ──────────
+# - name: "firewall"
+#   ip: "10.0.0.254"
+#   location: "dmz"
+#   snmp_enabled: false

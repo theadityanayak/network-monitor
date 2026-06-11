@@ -1,0 +1,23 @@
+# Docker volumes
+prometheus_data/
+grafana_data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive — never commit real community strings
+# devices.yaml  ← keep this commented so the template IS committed

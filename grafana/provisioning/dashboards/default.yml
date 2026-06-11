@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────
+#  provisioning/dashboards/default.yml
+#  Tells Grafana where to find pre-built dashboard JSON files.
+# ─────────────────────────────────────────────────────────────
+
+apiVersion: 1
+
+providers:
+  - name: "Network Monitor"
+    orgId: 1
+    folder: "Network"
+    folderUid: "network-monitor"
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards

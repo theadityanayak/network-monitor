@@ -1,0 +1,390 @@
+{
+  "__inputs": [],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "table", "name": "Table", "version": "" },
+    { "type": "panel", "id": "gauge", "name": "Gauge", "version": "" }
+  ],
+  "annotations": { "list": [] },
+  "description": "Network device availability, latency, packet loss, and SNMP interface metrics",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "🌐 Device Availability Overview",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "red",   "index": 1, "text": "DOWN" },
+                           "1": { "color": "green", "index": 0, "text": "UP"   } },
+              "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute",
+            "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center",
+                   "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                   "textMode": "auto" },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "device_up",
+          "legendFormat": "{{device}} ({{ip}})",
+          "refId": "A" }
+      ],
+      "title": "Device Status",
+      "type": "stat"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "ms",
+          "thresholds": { "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 50   },
+              { "color": "orange", "value": 100  },
+              { "color": "red",    "value": 200  }
+            ]}
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center",
+                   "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "ping_rtt_ms",
+          "legendFormat": "{{device}}",
+          "refId": "A" }
+      ],
+      "title": "Current RTT",
+      "type": "stat"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "percent",
+          "thresholds": { "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 1    },
+              { "color": "orange", "value": 5    },
+              { "color": "red",    "value": 25   }
+            ]}
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center",
+                   "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "ping_packet_loss_percent",
+          "legendFormat": "{{device}}",
+          "refId": "A" }
+      ],
+      "title": "Packet Loss %",
+      "type": "stat"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center",
+                   "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "snmp_sys_uptime_seconds",
+          "legendFormat": "{{device}}",
+          "refId": "A" }
+      ],
+      "title": "Device Uptime",
+      "type": "stat"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "📈 Latency & Packet Loss Over Time",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "ms",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 10,
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "ping_rtt_ms{device=~\"$device\"}",
+          "legendFormat": "{{device}} ({{ip}})",
+          "refId": "A" }
+      ],
+      "title": "ICMP Round-Trip Time (ms)",
+      "type": "timeseries"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "percent",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 11,
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "ping_packet_loss_percent{device=~\"$device\"}",
+          "legendFormat": "{{device}}",
+          "refId": "A" }
+      ],
+      "title": "Packet Loss % Over Time",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "🔌 SNMP — Interface Traffic",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "Bps",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 20,
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(snmp_interface_in_octets_total{device=~\"$device\"}[2m])",
+          "legendFormat": "{{device}} {{interface}} IN",
+          "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(snmp_interface_out_octets_total{device=~\"$device\"}[2m])",
+          "legendFormat": "{{device}} {{interface}} OUT",
+          "refId": "B" }
+      ],
+      "title": "Interface Throughput (Bytes/s)",
+      "type": "timeseries"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": {
+                "1": { "color": "green", "index": 0, "text": "up"      },
+                "2": { "color": "red",   "index": 1, "text": "down"    },
+                "3": { "color": "yellow","index": 2, "text": "testing" }
+              }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute",
+            "steps": [{ "color": "green", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 21,
+      "options": {
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [{ "displayName": "Device", "desc": false }]
+      },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "snmp_interface_oper_status{device=~\"$device\"}",
+          "legendFormat": "{{device}} :: {{interface}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table" }
+      ],
+      "title": "Interface Operational Status",
+      "transformations": [
+        { "id": "organize", "options": {
+            "renameByName": {
+              "device": "Device", "interface": "Interface",
+              "Value": "Status", "ip": "IP"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 103,
+      "title": "⚙️  Poller Health",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 5 }
+        }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 24 },
+      "id": 30,
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "increase(poller_errors_total[5m])",
+          "legendFormat": "{{device}} ({{type}})",
+          "refId": "A" }
+      ],
+      "title": "Poller Errors (5m window)",
+      "type": "timeseries"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "s",
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 24 },
+      "id": 31,
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "histogram_quantile(0.95, rate(poller_poll_duration_seconds_bucket[5m]))",
+          "legendFormat": "p95 {{device}}",
+          "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "histogram_quantile(0.50, rate(poller_poll_duration_seconds_bucket[5m]))",
+          "legendFormat": "p50 {{device}}",
+          "refId": "B" }
+      ],
+      "title": "Poll Duration Percentiles",
+      "type": "timeseries"
+    }
+
+  ],
+
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["network", "snmp", "icmp", "devops"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "definition": "label_values(device_up, device)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "device",
+        "options": [],
+        "query": { "query": "label_values(device_up, device)", "refId": "StandardVariableQuery" },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query",
+        "label": "Device"
+      },
+      {
+        "current": { "selected": false, "text": "Prometheus", "value": "Prometheus" },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource",
+        "label": "Data Source"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Network Monitor — Overview",
+  "uid": "net-monitor-overview",
+  "version": 1
+}

@@ -1,0 +1,86 @@
+# ─────────────────────────────────────────────────────────────
+#  rules/network_alerts.yml — Alerting Rules
+# ─────────────────────────────────────────────────────────────
+
+groups:
+  - name: network_availability
+    interval: 30s
+    rules:
+
+      # Device completely unreachable
+      - alert: DeviceDown
+        expr: device_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Device {{ $labels.device }} ({{ $labels.ip }}) is DOWN"
+          description: >
+            {{ $labels.device }} at {{ $labels.ip }} ({{ $labels.location }})
+            has not responded to ICMP pings for over 1 minute.
+
+      # High packet loss (but not fully down)
+      - alert: HighPacketLoss
+        expr: ping_packet_loss_percent > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High packet loss to {{ $labels.device }}"
+          description: >
+            Packet loss to {{ $labels.device }} ({{ $labels.ip }}) is
+            {{ $value | printf "%.1f" }}% — threshold is 10%.
+
+      # High latency
+      - alert: HighLatency
+        expr: ping_rtt_ms > 200
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency to {{ $labels.device }}"
+          description: >
+            RTT to {{ $labels.device }} ({{ $labels.ip }}) is
+            {{ $value | printf "%.1f" }}ms — threshold is 200ms.
+
+  - name: snmp_health
+    interval: 60s
+    rules:
+
+      # Interface operationally down
+      - alert: InterfaceDown
+        expr: snmp_interface_oper_status == 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Interface {{ $labels.interface }} is down on {{ $labels.device }}"
+          description: >
+            Interface {{ $labels.interface }} on {{ $labels.device }} ({{ $labels.ip }})
+            reports operStatus=down for over 2 minutes.
+
+      # High CPU load
+      - alert: HighCPULoad
+        expr: snmp_cpu_load_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU on {{ $labels.device }}"
+          description: >
+            {{ $labels.device }} CPU load is {{ $value | printf "%.1f" }}%
+            (threshold: 80%) for 5 minutes.
+
+  - name: poller_health
+    rules:
+
+      # Exporter itself is having errors
+      - alert: PollerErrorsHigh
+        expr: increase(poller_errors_total[5m]) > 5
+        labels:
+          severity: warning
+        annotations:
+          summary: "Poller errors spiking for {{ $labels.device }}"
+          description: >
+            More than 5 polling errors in 5 minutes for {{ $labels.device }}
+            (type: {{ $labels.type }}).
